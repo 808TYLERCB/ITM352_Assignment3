@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Spam Mart LLC</title>
+
+    <!-- Bootstrap CSS and custom stylesheet -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<style> body {
+    background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url('/images/background.jpeg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <a class="navbar-brand" href="index.html">
+        <img src="/images/logo.png" alt="Logo" class="logo">
+        Spam Mart
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="products_display.html">Products</a>
+            </li>
+            <li class="nav-item">
+                <span class="nav-link-divider">|</span>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="login.html">Login</a>
+            </li>
+            <!-- Add more nav items here if needed -->
+        </ul>
+    </div>
+</nav>
+
+<body class="auth-page">
+    <!-- Login Form -->
+    <main>
+        <div id="login-success-message"></div>
+        <section class="login-container">
+            <h1>SpamMart Login</h1>
+            <form id="login-form" action="/login" method="post" novalidate>
+                <input type="hidden" name="purchaseData" id="purchaseData" value="">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                    <input type="checkbox" id="login-show-password"> Show Password
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <div id="error-message"></div> <!-- Error message under the button -->
+            <div id="already-logged-in-message"></div>
+            <p>Don't have an account? <a id="registration-link" href="register.html">Register here</a>.</p>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p id="user-welcome-message"></p> <!-- This will be filled by JavaScript -->
+        <p>&copy; 2023 Spam Mart LLC. All rights reserved.</p>
+    </footer>  
+
+  
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="./login.js"></script> <!-- Script to handle login form data -->
+
+
+</body>
+</html>

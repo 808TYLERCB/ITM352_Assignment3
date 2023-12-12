@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice</title>
+    <!-- Loading Product Data-->
+    <script type="text/javascript" src="./products.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<!-- Background -->
+<style> 
+body {
+    background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url('/images/background.jpeg') no-repeat center center fixed;
+    background-size: cover;
+}
+</style>
+
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12">
+                                <!-- Footer -->
+                                <footer class="footer">
+                                    <p id="user-welcome-message"></p> <!-- This will be filled by JavaScript -->
+                                    <p>&copy; 2023 Spam Mart LLC. All rights reserved.</p>
+                                </footer>
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Extended Price</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoice-body">
+                        <!-- Invoice items will be inserted here -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-right">Subtotal:</td>
+                            <td id="subtotal-amount">$0.00</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-right">Sales Tax (4%):</td>
+                            <td id="tax-amount">$0.00</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-right">Shipping:</td>
+                            <td id="shipping-amount">$0.00</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-right"><strong>Total Amount:</strong></td>
+                            <td id="total-amount">$0.00</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                <!-- Action buttons below the table -->
+                <div class="invoice-actions text-center">
+                    <button id="continue-shopping" class="btn btn-primary">Continue Shopping</button>
+                    <button id="confirm-purchase" class="btn btn-success">Confirm Purchase</button>
+                </div>
+
+                <!-- Thank-you message placeholder -->
+                <div id="thank-you-message" style="display: none;">
+                    Thank you for your purchase! You will be logged out and redirected to the home page.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./invoice.js"></script> <!-- Script to handle invoice data -->
+</body>
+</html>
