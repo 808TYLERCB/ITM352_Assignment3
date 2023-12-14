@@ -13,7 +13,12 @@
 </head>
 
 <!-- Background -->
+<style> body {
+    background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url('/images/background.jpeg') no-repeat center center fixed;
+    background-size: cover;
+}
 
+</style>
 
 <body>
 <!-- NavBar -->
@@ -52,6 +57,7 @@
 
     <!-- Pruchase Form -->
     <div class="container mt-4">
+        <form action="/process-purchase" method="POST">
             <input type="hidden" name="token" id="token">
             <input type="hidden" name="userName" id="userName">
             <input type="hidden" name="userCount" id="userCount">
@@ -59,6 +65,7 @@
             <!-- Product Cards Dynamically populate here -->
             <div class="row justify-content-center mt-4 mb-5">
                 <div class="col-md-8">
+                    <button type="submit" class="btn btn-primary btn-block">Confirm Purchase</button>
                 </div>
             </div>
         </form>
@@ -73,6 +80,6 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <script src="./products_display.js"></script> <!-- Script to handle product display data -->
+    <script src="./products_display3.js"></script> <!-- Script to handle product display data -->
 </body>
 </html>

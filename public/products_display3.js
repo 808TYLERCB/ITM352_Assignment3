@@ -3,19 +3,21 @@ const productsContainer = document.getElementById('products-container');
 let row = createRow();
 productsContainer.appendChild(row);
 
-// Loop through products and create cards, but only for products with IDs from 1 to 6
+// Loop through products and create cards, but only for products with IDs from 13 to 18
 products.forEach((product) => {
-    if (product.id >= 1 && product.id <= 6) {
+    if (product.id >= 13 && product.id <= 18) {
         const card = createCard(product);
         row.appendChild(card);
 
-        // Creating a new row after every third card
-        if (product.id % 3 === 0 && product.id < 6) {
+        // Creating a new row after every third card in this range
+        if ((product.id - 12) % 3 === 0 && product.id < 18) {
             row = createRow();
             productsContainer.appendChild(row);
         }
     }
 });
+
+
 
 // Define the createRow function that creates and returns a new row element
 function createRow() {
@@ -24,6 +26,7 @@ function createRow() {
     return rowDiv;
 }
 
+// Define the createCard function that creates and returns a card element for a product
 function createCard(product) {
     // Create a new div element for the column layout
     const colDiv = document.createElement('div');
@@ -62,58 +65,37 @@ function createCard(product) {
     qty.textContent = `Quantity Available: ${product.qty_available}`;
     cardBody.appendChild(qty);
 
+    // Create and append the quantity sold to the card body
+    const qtySold = document.createElement('p');
+    qtySold.className = 'card-text';
+    qtySold.textContent = `Quantity Sold: ${product.qty_sold}`;
+    cardBody.appendChild(qtySold);
+
+    // Create and append the product description to the card body
+    const description = document.createElement('p');
+    description.className = 'card-text';
+    description.textContent = product.description;
+    cardBody.appendChild(description);
+
     // Create a div for the purchase section with layout settings
     const purchaseDiv = document.createElement('div');
     purchaseDiv.className = 'purchase-section d-flex flex-column align-items-start justify-content-between mt-2';
 
-    // Create a div for the quantity selector
-    const quantitySelectorDiv = document.createElement('div');
-    quantitySelectorDiv.className = 'quantity-selector d-flex align-items-center';
-
-    // Create the decrement button
-    const decrementButton = document.createElement('button');
-    decrementButton.textContent = '-';
-    decrementButton.className = 'quantity-change-button btn btn-outline-secondary';
-    decrementButton.onclick = () => {
-        const currentVal = parseInt(quantityInput.value, 10);
-        quantityInput.value = currentVal - 1 > 0 ? currentVal - 1 : 0;
-    };
-
-    // Create the increment button
-    const incrementButton = document.createElement('button');
-    incrementButton.textContent = '+';
-    incrementButton.className = 'quantity-change-button btn btn-outline-secondary';
-    incrementButton.onclick = () => {
-        const currentVal = parseInt(quantityInput.value, 10);
-        quantityInput.value = currentVal + 1 <= product.qty_available ? currentVal + 1 : currentVal;
-    };
-
-    // Create and configure a number input for quantity
+    // Create and configure an input for quantity
     const quantityInput = document.createElement('input');
-    quantityInput.type = 'number';
+    quantityInput.type = 'text';
     quantityInput.name = 'quantity_' + product.name.replace(/\s+/g, '_');
-    quantityInput.className = 'form-control quantity-input';
-    quantityInput.value = 0; // Start with a default value of 0
-    quantityInput.min = 0; // The minimum value is 0
-    quantityInput.max = product.qty_available; // The maximum value is the available quantity
+    quantityInput.className = 'form-control';
+    quantityInput.placeholder = 'Qty:';
+    quantityInput.addEventListener('input', () => validateQuantityInput(quantityInput, product.qty_available, messageDiv));
 
-    // Append the buttons and input to the selector div
-    quantitySelectorDiv.appendChild(decrementButton);
-    quantitySelectorDiv.appendChild(quantityInput);
-    quantitySelectorDiv.appendChild(incrementButton);
-
-    // Create the "Add to Cart" button
-    const addToCartButton = document.createElement('button');
-    addToCartButton.textContent = 'Add to Cart';
-    addToCartButton.className = 'add-to-cart-button btn btn-primary mt-2';
-    addToCartButton.onclick = () => {
-        // Add functionality for adding the product to the cart here
-        alert(`Added ${quantityInput.value} of ${product.name} to cart`);
-    };
+    // Create a div for displaying messages (e.g., validation)
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message mt-2';
 
     // Append elements to the purchase section and card body
-    purchaseDiv.appendChild(quantitySelectorDiv);
-    purchaseDiv.appendChild(addToCartButton);
+    purchaseDiv.appendChild(quantityInput);
+    purchaseDiv.appendChild(messageDiv);
     cardBody.appendChild(purchaseDiv);
 
     // Construct the final product card by appending elements
@@ -123,9 +105,6 @@ function createCard(product) {
     // Return the column div, which contains the complete card
     return colDiv;
 }
-
-
-
 
 // Function to validate the inputted quantity against various criteria
 function validateQuantityInput(inputElement, maxQuantity, messageDiv) {
@@ -210,3 +189,60 @@ function displayErrors() {
         container.prepend(errorDiv);
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the current URL query string
+    const currentQueryString = window.location.search;
+
+    // Select all anchor links on the page
+    const allLinks = document.querySelectorAll('a');
+
+    // Append the query string to each link's href attribute
+    allLinks.forEach(link => {
+        // Avoid appending query string to links that already have one
+        if (!link.href.includes('?')) {
+            link.href += currentQueryString;
+        }
+    });
+
+    // Additional code for updating the user welcome message, if needed...
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Retrieve the username and user count from the URL query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (urlParams.has('userName') && urlParams.has('userCount')) {
+        const userName = urlParams.get('userName');
+        const userCount = urlParams.get('userCount');
+
+        // Update the user welcome message
+        const welcomeMessageElement = document.getElementById('user-welcome-message');
+        if (welcomeMessageElement) {
+            welcomeMessageElement.textContent = `Welcome ${userName}! there are ${userCount} other user(s) currently shopping.`;
+        }
+    }
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Retrieve the parameters from the URL query
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    const userName = urlParams.get('userName');
+    const userCount = urlParams.get('userCount');
+
+    // Set the values to the hidden input fields
+    document.getElementById('token').value = token || '';
+    document.getElementById('userName').value = userName || '';
+    document.getElementById('userCount').value = userCount || '';
+
+    // Update the welcome message if needed
+    if (userName && userCount) {
+        const welcomeMessageElement = document.getElementById('user-welcome-message');
+        if (welcomeMessageElement) {
+            welcomeMessageElement.textContent = `Welcome ${userName}! There are ${userCount} other user(s) currently shopping.`;
+        }
+    }
+});
+

@@ -3,14 +3,14 @@ const productsContainer = document.getElementById('products-container');
 let row = createRow();
 productsContainer.appendChild(row);
 
-// Loop through products and create cards, but only for products with IDs from 1 to 6
+// Loop through products and create cards, but only for products with IDs from 7 to 12
 products.forEach((product) => {
-    if (product.id >= 1 && product.id <= 6) {
+    if (product.id >= 7 && product.id <= 12) {
         const card = createCard(product);
         row.appendChild(card);
 
-        // Creating a new row after every third card
-        if (product.id % 3 === 0 && product.id < 6) {
+        // Creating a new row after every third card in this range
+        if ((product.id - 6) % 3 === 0 && product.id < 12) {
             row = createRow();
             productsContainer.appendChild(row);
         }
@@ -124,89 +124,3 @@ function createCard(product) {
     return colDiv;
 }
 
-
-
-
-// Function to validate the inputted quantity against various criteria
-function validateQuantityInput(inputElement, maxQuantity, messageDiv) {
-    // Trim the value from the input element to remove any white spaces
-    const value = inputElement.value.trim();
-    let errorMessage = "";
-
-    // Check if the input is empty
-    if (value === '') {
-        // If the input is empty, reset border color and don't display any error message
-        inputElement.style.borderColor = '';
-        messageDiv.textContent = '';
-        return; // Exit the function early if there's no input
-    }
-
-    // Convert the input value to a floating-point number to detect decimals
-    const numericValue = parseFloat(value);
-
-    // Validate the numeric value against various conditions
-    if (isNaN(numericValue) || numericValue < 0) {
-        // Set an error message if the value is not a number or negative
-        errorMessage = "Quantity must be a non-negative number!";
-    } else if (numericValue === 0) {
-        // Set an error message if the value is zero
-        errorMessage = "Please enter a quantity greater than 0.";
-    } else if (!Number.isInteger(numericValue)) {
-        // Set an error message if the value contains decimals
-        errorMessage = "Please enter a whole number, no decimals.";
-    } else if (numericValue > maxQuantity) {
-        // Set an error message if the value exceeds the available stock
-        errorMessage = `Quantity exceeds available stock! Only ${maxQuantity} left.`;
-    }
-
-    // Display the error message if any, and adjust the input element's style accordingly
-    if (errorMessage) {
-        inputElement.style.borderColor = 'red'; // Set border color to red to indicate an error
-        messageDiv.textContent = errorMessage; // Display the error message
-        messageDiv.style.color = 'red'; // Set the color of the message to red
-    } else {
-        // Reset the styles if the input is valid
-        inputElement.style.borderColor = '';
-        messageDiv.textContent = '';
-    }
-}
-// Error Message from Server if Validation not Passed
-
-// Assign a function to be executed when the window is fully loaded
-window.onload = function() {
-    // Call the displayErrors function to check for and display any errors
-    displayErrors();
-};
-
-// Function to display errors on the webpage
-function displayErrors() {
-    // Create a new URLSearchParams object to parse the query string of the URL
-    const urlParams = new URLSearchParams(window.location.search);
-
-    // Get the 'errors' parameter from the query string
-    const errors = urlParams.get('errors');
-    
-    // Check if there are any errors present
-    if (errors) {
-        // Parse the 'errors' parameter value as JSON to get an array of error messages
-        const errorList = JSON.parse(errors);
-
-        // Create a new div element to display the errors
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'alert alert-danger'; // Set class for styling the error div
-        errorDiv.role = 'alert'; // Set the role attribute for accessibility
-
-        // Iterate over each error message in the error list
-        errorList.forEach(err => {
-            // Create a paragraph element for each error message
-            const errP = document.createElement('p');
-            errP.textContent = err; // Set the text of the paragraph to the error message
-            errorDiv.appendChild(errP); // Append the paragraph to the error div
-        });
-
-        // Get the container element where the errors will be displayed
-        const container = document.getElementById('products-container');
-        // Prepend the error div to the container so it appears at the top
-        container.prepend(errorDiv);
-    }
-}
