@@ -11,6 +11,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
 
 </head>
 
@@ -24,7 +25,6 @@ body {
 </style>
 
 <body>
-    
     <nav class="navbar navbar-expand-lg navbar-custom">
         <a class="navbar-brand" href="index.html">
             <img src="/images/logo.png" alt="Logo" class="logo">
@@ -56,6 +56,21 @@ body {
                 <li class="nav-item">
                     <a class="nav-link" href="login.html">Login</a>
                 </li>
+                <li class="nav-item">
+                    <span class="nav-link-divider">|</span>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCart" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-shopping-cart"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownCart">
+                        <div id="cart-dropdown-content">
+                            <!-- Cart items will be dynamically inserted here -->
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item btn-checkout" href="invoice.html">Checkout</a>
+                    </div>
+                </li>
                 <!-- Add more nav items here if needed -->
             </ul>
         </div>
@@ -75,5 +90,6 @@ body {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="index.js"></script>
+    <script src="cart.js"></script>
 </body>
 </html>

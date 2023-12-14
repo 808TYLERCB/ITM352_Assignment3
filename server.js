@@ -3,6 +3,7 @@ const fs = require('fs');
 const crypto = require('crypto');
 const app = express();
 const path = require('path');
+const session = require('express-session');
 
 // Middleware for parsing application/x-www-form-urlencoded and JSON
 app.use(express.urlencoded({ extended: true }));
@@ -25,11 +26,48 @@ const validateToken = (req, res, next) => {
 // Global array to track logged-in users
 let loggedInUsers = [];
 
+
+app.use(session({
+    secret: 'secret_key', // Replace with a real secret key
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set to true if using HTTPS
+  }));
+
+  app.post('/add-to-cart', (req, res) => {
+    const productToAdd = req.body;
+
+    if (!req.session.cart) {
+        req.session.cart = [];
+    }
+
+    // Check if the product is already in the cart
+    const existingProduct = req.session.cart.find(item => item.id === productToAdd.id);
+    if (existingProduct) {
+        existingProduct.quantity += productToAdd.quantity;
+    } else {
+        req.session.cart.push(productToAdd);
+    }
+
+    res.json({ message: 'Product added to cart', cart: req.session.cart });
+});
+
+app.post('/remove-from-cart', (req, res) => {
+    const { productId } = req.body;
+    req.session.cart = req.session.cart.filter(item => item.id !== productId);
+    res.send('Product removed from cart');
+  });
+
 // Protect the invoice route
 app.get('/invoice.html', validateToken, (req, res) => {
     // Serve the invoice page
     res.sendFile(path.join(__dirname, '/public', 'invoice.html'));
 });
+
+app.get('/cart', (req, res) => {
+    res.json(req.session.cart || []);
+  });
+
 
 // Log all requests
 app.all('*', function (request, response, next) {
@@ -73,25 +111,6 @@ const saveUserData = (data) => {
     }
 };
 
-// Function to generate a token
-const generateToken = () => {
-    return crypto.randomBytes(20).toString('hex');
-};
-
-// Function to validate user credentials with encrypted password
-const validateUser = (email, password) => {
-    const users = getUserData();
-    const user = users.find(user => user.email.toLowerCase() === email.toLowerCase());
-
-    if (user) {
-        // Hash the provided password with the stored salt
-        const hash = crypto.pbkdf2Sync(password, user.salt, 1000, 64, `sha512`).toString(`hex`);
-        // Compare the hash with the stored hash
-        return user.password === hash;
-    } else {
-        return false;
-    }
-};
 
 // Function to check if email is already in use
 const isEmailInUse = (email) => {
@@ -294,8 +313,6 @@ app.post('/process-purchase', (req, res) => {
         }
     }
 });
-
-
 
 
 function quantityValidation(reqBody, products) {
