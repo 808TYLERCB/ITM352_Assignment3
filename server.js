@@ -53,10 +53,20 @@ app.use(session({
 });
 
 app.post('/remove-from-cart', (req, res) => {
-    const { productId } = req.body;
+    // Convert productId from string to number
+    const productId = parseInt(req.body.productId, 10);
+    
+    // Then use it to filter out the item from the cart
     req.session.cart = req.session.cart.filter(item => item.id !== productId);
-    res.send('Product removed from cart');
+
+    res.json({ success: true, cart: req.session.cart });
+});
+
+
+  app.get('/cart', (req, res) => {
+    res.json(req.session.cart || []);
   });
+
 
 // Protect the invoice route
 app.get('/invoice.html', validateToken, (req, res) => {
@@ -64,9 +74,6 @@ app.get('/invoice.html', validateToken, (req, res) => {
     res.sendFile(path.join(__dirname, '/public', 'invoice.html'));
 });
 
-app.get('/cart', (req, res) => {
-    res.json(req.session.cart || []);
-  });
 
 
 // Log all requests

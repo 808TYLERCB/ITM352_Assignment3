@@ -9,8 +9,8 @@ products.forEach((product) => {
         const card = createCard(product);
         row.appendChild(card);
 
-        // Creating a new row after every third card
-        if (product.id % 3 === 0 && product.id < 6) {
+        // Creating a new row after every third card in this range
+        if ((product.id - 0) % 3 === 0 && product.id < 12) {
             row = createRow();
             productsContainer.appendChild(row);
         }
@@ -75,7 +75,8 @@ function createCard(product) {
     decrementButton.textContent = '-';
     decrementButton.className = 'quantity-change-button btn btn-outline-secondary';
     decrementButton.onclick = () => {
-        adjustQuantity(quantityInput, product, -1);
+        const currentVal = parseInt(quantityInput.value, 10);
+        quantityInput.value = currentVal - 1 > 0 ? currentVal - 1 : 0;
     };
 
     // Create the increment button
@@ -83,7 +84,8 @@ function createCard(product) {
     incrementButton.textContent = '+';
     incrementButton.className = 'quantity-change-button btn btn-outline-secondary';
     incrementButton.onclick = () => {
-        adjustQuantity(quantityInput, product, 1);
+        const currentVal = parseInt(quantityInput.value, 10);
+        quantityInput.value = currentVal + 1 <= product.qty_available ? currentVal + 1 : currentVal;
     };
 
     // Create and configure a number input for quantity
@@ -105,28 +107,12 @@ function createCard(product) {
     addToCartButton.textContent = 'Add to Cart';
     addToCartButton.className = 'add-to-cart-button btn btn-primary mt-2';
     addToCartButton.onclick = () => {
-        // Add functionality for adding the product to the cart here
-        const productToAdd = {
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            quantity: parseInt(quantityInput.value, 10)
-        };
-    
-        fetch('/add-to-cart', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(productToAdd)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Product added', data);
-            // Here you would update the UI to reflect the item being added to the cart
-            updateCartDropdown(data.cart);
-        })
-        .catch(error => console.error('Error:', error));
+        const quantity = parseInt(quantityInput.value, 10);
+        if (quantity > 0) {
+            addToCart(product.id, quantity);
+        } else {
+            console.log('Please select a quantity'); // Replacing alert with console log
+        }
     };
 
     // Append elements to the purchase section and card body
@@ -142,12 +128,22 @@ function createCard(product) {
     return colDiv;
 }
 
-// Function to adjust the quantity in the input field
-function adjustQuantity(inputElement, product, change) {
-    let currentVal = parseInt(inputElement.value, 10);
-    currentVal += change;
-    currentVal = Math.max(0, Math.min(currentVal, product.qty_available)); // Ensuring the value is within valid range
-    inputElement.value = currentVal;
+// Function to add an item to the cart
+function addToCart(productId, quantity) {
+    fetch('/add-to-cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: productId, quantity: quantity })
+    })
+    .then(response => response.json())
+    .then(data => {
+        updateCartIcon(data.cartItemCount); // Assume this returns the total item count
+    })
+    .catch(error => console.error('Error:', error));
 }
 
-
+// Function to update the cart icon
+function updateCartIcon(count) {
+    const cartIcon = document.getElementById('cart-icon');
+    cartIcon.textContent = `Cart (${count})`;
+}

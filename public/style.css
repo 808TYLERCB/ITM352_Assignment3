@@ -227,60 +227,20 @@ margin-top: auto;
     text-align: center;/* Optional: centers the text */
 }
 
-
-/* Cart Dropdown Styles */
-.nav-item .dropdown-menu {
-    min-width: 300px; /* Set minimum width */
-    max-height: 400px; /* Set maximum height */
-    overflow-y: auto; /* Enable vertical scrolling */
-    padding: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Shadow for dropdown */
-}
-
-/* Style for individual cart items in the dropdown */
-.nav-item .dropdown-menu .dropdown-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ddd; /* Separator between items */
-}
-
-/* Style for the cart item name and quantity */
-.nav-item .dropdown-menu .dropdown-item div {
-    margin-right: 10px;
-}
-
-/* Style for the "Go to Checkout" button */
-.nav-item .dropdown-menu .dropdown-item a {
-    display: block;
-    text-align: center;
-    margin-top: 10px;
-    padding: 5px 10px;
-    background-color: #007bff; /* Bootstrap primary color */
+.btn-custom-blue {
+    background-color: #007bff;
     color: white;
-    border-radius: 5px;
-    text-decoration: none;
-}
-
-.nav-item .dropdown-menu .dropdown-item a:hover {
-    background-color: #0056b3; /* Darken on hover */
-}
-
-/* Checkout Button Styles */
-.btn-checkout {
-    background-color: #007bff; /* Bootstrap primary blue */
-    color: white;
-    border: none;
     padding: 10px 20px;
+    margin: 5px;
+    font-size: 18px;
     border-radius: 5px;
-    text-align: center; /* Center the text */
-    display: block; /* Make it a block element to fill the container */
-    width: 100%; /* Ensure it fills the container width */
 }
 
-.btn-checkout:hover {
-    background-color: #0056b3; /* A darker shade of blue for hover state */
-    color: white;
-    text-decoration: none;
+.btn-custom-blue:hover {
+    background-color: #0056b3;
+}
+
+.cart-totals {
+    text-align: left;
+    margin-bottom: 20px;
 }
