@@ -99,6 +99,17 @@ function createCard(product) {
     quantityInput.min = 0; // The minimum value is 0
     quantityInput.max = product.qty_available; // The maximum value is the available quantity
 
+    quantityInput.addEventListener('input', () => {
+        let val = parseInt(quantityInput.value, 10);
+        if (isNaN(val) || val < 0) {
+            quantityInput.value = 0;
+        } else if (val > product.qty_available) {
+            quantityInput.style.borderColor = 'red'; // Indicate invalid input
+        } else {
+            quantityInput.style.borderColor = ''; // Reset to default
+        }
+    });
+
     // Append the buttons and input to the selector div
     quantitySelectorDiv.appendChild(decrementButton);
     quantitySelectorDiv.appendChild(quantityInput);
@@ -109,8 +120,12 @@ function createCard(product) {
     addToCartButton.textContent = 'Add to Cart';
     addToCartButton.className = 'add-to-cart-button btn btn-primary mt-2';
     addToCartButton.onclick = () => {
-        // Add functionality for adding the product to the cart here
-        alert(`Added ${quantityInput.value} of ${product.name} to cart`);
+        const quantity = parseInt(quantityInput.value, 10);
+        if (quantity > 0 && quantity <= product.qty_available) {
+            addToCart(product.id, quantity);
+        } else {
+            console.log('Selected quantity exceeds available stock'); // Or display an error message to the user
+        }
     };
 
     // Append elements to the purchase section and card body
@@ -126,3 +141,86 @@ function createCard(product) {
     return colDiv;
 }
 
+function addToCart(productId, quantity) {
+    fetch('/add-to-cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId, quantity })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.totalItems !== undefined) {
+            updateCartIcon(data.totalItems);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function updateCartIcon() {
+    fetch('/get-cart')
+    .then(response => response.json())
+    .then(cart => {
+        const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+        const cartIcon = document.getElementById('cart-item-count');
+        cartIcon.textContent = `(${totalItems})`;
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+document.addEventListener('DOMContentLoaded', updateCartIcon);
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Check login status and set username
+    fetch('/check-login-status')
+    .then(response => response.json())
+    .then(data => {
+        if (data.isLoggedIn) {
+            // User is logged in, display the username
+            const userName = data.userName; // Assuming the username is returned from the server
+            document.getElementById('user-name').textContent = userName;
+            // Make the dropdown clickable by adding 'dropdown-toggle' class
+            const profileLink = document.getElementById('navbarDropdown');
+            profileLink.classList.add('dropdown-toggle');
+            profileLink.setAttribute('data-toggle', 'dropdown');
+        } else {
+            // User is not logged in, hide the dropdown toggle functionality
+            document.getElementById('navbarDropdown').remove();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+
+    // Event listener for the logout button
+    const logoutBtn = document.getElementById('logout-button');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            logoutUser();
+        });
+    }
+});
+
+function logoutUser() {
+    // AJAX request to the server's logout route
+    fetch('/logout', {
+        method: 'POST',
+        // Add any necessary headers, credentials, or body data here
+        headers: {
+            'Content-Type': 'application/json'
+            // Include credentials if necessary: 'credentials': 'include'
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Log out actions here (e.g., redirect to login page)
+            window.location.href = '/login.html';
+        } else {
+            // Handle logout failure
+            alert('Logout failed: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}

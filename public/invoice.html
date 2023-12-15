@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+
 </head>
 
 <!-- Background -->
@@ -18,14 +20,71 @@ body {
 </style>
 
 <body>
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <a class="navbar-brand" href="index.html">
+            <img src="/images/logo.png" alt="Logo" class="logo">
+            Spam Mart
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="products_display.html">Spam</a>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-link-divider">|</span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="products_display2.html">Apparel</a>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-link-divider">|</span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="products_display3.html">Accessories</a>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-link-divider">|</span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="login.html">Login</a>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-link-divider">|</span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="cart.html">
+                        <i class="fa fa-shopping-cart"></i> Cart
+                        <span id="cart-item-count">0</span> <!-- This is where the item count will be displayed -->
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-link-divider">|</span>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user"></i> <span id="user-name">Profile</span>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <button class="dropdown-item" id="logout-button">Logout</button>
+                        </div>
+                    </li>
+               <!-- Add more nav items here if needed -->
+            </ul>
+        </div>
+    </nav>
+
     <div class="container mt-5">
         <div class="row">
             <div class="col-12">
-                                <!-- Footer -->
-                                <footer class="footer">
-                                    <p id="user-welcome-message"></p> <!-- This will be filled by JavaScript -->
-                                    <p>&copy; 2023 Spam Mart LLC. All rights reserved.</p>
-                                </footer>
+                
+                <footer class="footer">
+                    <p id="user-welcome-message"></p>
+                    <p>Please verify if this information is correct before purchasing</p>
+                    <p>Name: <span id="user-name-footer"></span></p>
+                    <p>Email: <span id="user-email-footer"></span></p>
+                </footer>
 
                 <table class="table table-bordered">
                     <thead>
@@ -67,11 +126,18 @@ body {
 
                 <!-- Thank-you message placeholder -->
                 <div id="thank-you-message" style="display: none;">
-                    Thank you for your purchase! You will be logged out and redirected to the home page.
                 </div>
             </div>
         </div>
     </div>
+
+
+   <!-- Footer -->
+   <footer class="footer">
+    <p id="user-welcome-message"></p> <!-- This will be filled by JavaScript -->
+    <p>&copy; 2023 Spam Mart LLC. All rights reserved.</p>
+    </footer>   
+
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>

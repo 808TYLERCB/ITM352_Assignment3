@@ -1,12 +1,9 @@
 // When the page is loaded, set up necessary values
 window.onload = function() {
-    // Set up purchaseData and errorMessage from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const email = urlParams.get('email');
     const errorMessage = urlParams.get('error');
 
-
-    // Prefill the email field if email is present in the URL parameters
     if (email) {
         const emailInput = document.getElementById('email');
         if (emailInput) {
@@ -14,29 +11,24 @@ window.onload = function() {
         }
     }
 
-    // Display error message if present
-    const errorDiv = document.getElementById('error-message');
     if (errorMessage) {
+        const errorDiv = document.getElementById('error-message');
         errorDiv.textContent = decodeURIComponent(errorMessage);
         errorDiv.style.color = 'red';
-        // Highlight error fields if there is an error message
         highlightErrorFields();
     }
 };
 
-// Function to highlight error fields
 function highlightErrorFields() {
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     
-    // Highlight both fields in case of any error
     if (emailInput && passwordInput) {
         emailInput.classList.add('error-input');
         passwordInput.classList.add('error-input');
     }
 }
 
-// Reset error highlighting when the user starts typing
 document.getElementById('email').addEventListener('input', function() {
     this.classList.remove('error-input');
     document.getElementById('error-message').textContent = '';
@@ -47,69 +39,191 @@ document.getElementById('password').addEventListener('input', function() {
     document.getElementById('error-message').textContent = '';
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Get the current URL query string
-    const currentQueryString = window.location.search;
+function updateCartIcon() {
+    fetch('/get-cart')
+    .then(response => response.json())
+    .then(cart => {
+        const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+        const cartIcon = document.getElementById('cart-item-count');
+        cartIcon.textContent = `(${totalItems})`;
+    })
+    .catch(error => console.error('Error:', error));
+}
 
-    // Select all anchor links on the page
-    const allLinks = document.querySelectorAll('a');
-
-    // Append the query string to each link's href attribute
-    allLinks.forEach(link => {
-        // Avoid appending query string to links that already have one
-        if (!link.href.includes('?')) {
-            link.href += currentQueryString;
-        }
-    });
-
-    // Additional code for updating the user welcome message, if needed...
+document.getElementById('login-show-password').addEventListener('change', function() {
+    const passwordInput = document.getElementById('password');
+    passwordInput.type = this.checked ? 'text' : 'password';
 });
 
-    // Retrieve the username and user count from the URL query parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    if (urlParams.has('userName') && urlParams.has('userCount')) {
-        const userName = urlParams.get('userName');
-        const userCount = urlParams.get('userCount');
-
-        // Update the user welcome message
-        const welcomeMessageElement = document.getElementById('user-welcome-message');
-        if (welcomeMessageElement) {
-            welcomeMessageElement.textContent = `Welcome ${userName}! there are ${userCount} other user(s) currently shopping.`;
-        }
-    }
-
-    function checkIfLoggedIn() {
-        // Parse URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
-        const userName = urlParams.get('userName');
-        const userCount = urlParams.get('userCount');
-    
-        // Check if the necessary parameters are present
-        if (token && userName && userCount !== null) {
-            // User is considered logged in, display a message
+function checkIfLoggedIn() {
+    fetch('/check-login-status')
+    .then(response => response.json())
+    .then(data => {
+        if (data.isLoggedIn) {
+            const userNameSpan = document.getElementById('user-name');
+            if (userNameSpan) {
+                userNameSpan.textContent = data.userName;
+            }
+            
             const messageDiv = document.getElementById('already-logged-in-message');
-            messageDiv.textContent = `Welcome back, ${decodeURIComponent(userName)}! You are already logged in.`;
-            messageDiv.style.display = 'block'; // Ensure the div is visible
-    
-            // Disable the login button
-            const loginButtons = document.querySelectorAll('button[type="submit"].btn.btn-primary'); // Selects all submit buttons with the specified classes
-            loginButtons.forEach(button => {
-                button.disabled = true;
-                button.style.opacity = 0.5; // Optional: change the style to indicate it's disabled
-            });
+            if (messageDiv) {
+                messageDiv.textContent = `Welcome back, ${data.userName}! You are already logged in.`;
+                messageDiv.style.display = 'block';
+            }
+
+            const loginForm = document.getElementById('login-form');
+            if (loginForm) {
+                loginForm.style.display = 'none';
+            }
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    checkIfLoggedIn();
+    updateCartIcon();
+});
+// When the page is loaded, set up necessary values
+window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const email = urlParams.get('email');
+    const errorMessage = urlParams.get('error');
+
+    if (email) {
+        const emailInput = document.getElementById('email');
+        if (emailInput) {
+            emailInput.value = decodeURIComponent(email);
         }
     }
-    
-    // Call the function when the document is loaded
-    document.addEventListener('DOMContentLoaded', checkIfLoggedIn);
 
-    document.getElementById('login-show-password').addEventListener('change', function() {
-        const passwordInput = document.getElementById('password');
-        if (this.checked) {
-            passwordInput.type = 'text';
-        } else {
-            passwordInput.type = 'password';
+    if (errorMessage) {
+        const errorDiv = document.getElementById('error-message');
+        errorDiv.textContent = decodeURIComponent(errorMessage);
+        errorDiv.style.color = 'red';
+        highlightErrorFields();
+    }
+};
+
+function highlightErrorFields() {
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    
+    if (emailInput && passwordInput) {
+        emailInput.classList.add('error-input');
+        passwordInput.classList.add('error-input');
+    }
+}
+
+document.getElementById('email').addEventListener('input', function() {
+    this.classList.remove('error-input');
+    document.getElementById('error-message').textContent = '';
+});
+
+document.getElementById('password').addEventListener('input', function() {
+    this.classList.remove('error-input');
+    document.getElementById('error-message').textContent = '';
+});
+
+function updateCartIcon() {
+    fetch('/get-cart')
+    .then(response => response.json())
+    .then(cart => {
+        const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+        const cartIcon = document.getElementById('cart-item-count');
+        cartIcon.textContent = `(${totalItems})`;
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+document.getElementById('login-show-password').addEventListener('change', function() {
+    const passwordInput = document.getElementById('password');
+    passwordInput.type = this.checked ? 'text' : 'password';
+});
+
+function checkIfLoggedIn() {
+    fetch('/check-login-status')
+    .then(response => response.json())
+    .then(data => {
+        if (data.isLoggedIn) {
+            const userNameSpan = document.getElementById('user-name');
+            if (userNameSpan) {
+                userNameSpan.textContent = data.userName;
+            }
+            
+            const messageDiv = document.getElementById('already-logged-in-message');
+            if (messageDiv) {
+                messageDiv.textContent = `Welcome back, ${data.userName}! You are already logged in.`;
+                messageDiv.style.display = 'block';
+            }
+
+            const loginForm = document.getElementById('login-form');
+            if (loginForm) {
+                loginForm.style.display = 'none';
+            }
         }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    checkIfLoggedIn();
+    updateCartIcon();
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Check login status and set username
+    fetch('/check-login-status')
+    .then(response => response.json())
+    .then(data => {
+        if (data.isLoggedIn) {
+            // User is logged in, display the username
+            const userName = data.userName; // Assuming the username is returned from the server
+            document.getElementById('user-name').textContent = userName;
+            // Make the dropdown clickable by adding 'dropdown-toggle' class
+            const profileLink = document.getElementById('navbarDropdown');
+            profileLink.classList.add('dropdown-toggle');
+            profileLink.setAttribute('data-toggle', 'dropdown');
+        } else {
+            // User is not logged in, hide the dropdown toggle functionality
+            document.getElementById('navbarDropdown').remove();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
     });
+
+    // Event listener for the logout button
+    const logoutBtn = document.getElementById('logout-button');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            logoutUser();
+        });
+    }
+});
+
+function logoutUser() {
+    // AJAX request to the server's logout route
+    fetch('/logout', {
+        method: 'POST',
+        // Add any necessary headers, credentials, or body data here
+        headers: {
+            'Content-Type': 'application/json'
+            // Include credentials if necessary: 'credentials': 'include'
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Log out actions here (e.g., redirect to login page)
+            window.location.href = '/login.html';
+        } else {
+            // Handle logout failure
+            alert('Logout failed: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+

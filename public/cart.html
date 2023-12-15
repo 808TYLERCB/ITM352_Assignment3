@@ -11,13 +11,6 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
 </head>
 
-<style> body {
-    background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url('/images/background.jpeg') no-repeat center center fixed;
-    background-size: cover;
-}
-
-
-</style>
 
 <nav class="navbar navbar-expand-lg navbar-custom">
     <a class="navbar-brand" href="index.html">
@@ -56,37 +49,46 @@
             <li class="nav-item">
                 <a class="nav-link" href="cart.html">
                     <i class="fa fa-shopping-cart"></i> Cart
+                    <span id="cart-item-count">0</span> <!-- This is where the item count will be displayed -->
                 </a>
             </li>
+            <li class="nav-item">
+                <span class="nav-link-divider">|</span>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-user"></i> <span id="user-name">Profile</span>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <button class="dropdown-item" id="logout-button">Logout</button>
+                    </div>
+                </li>
             <!-- Add more nav items here if needed -->
         </ul>
     </div>
 </nav>
-<div class="container mt-4">
-    <h2 class="text-center">Cart</h2>
 
+<div class="container mt-4">
+    <h2 class="text-center">Shopping Cart</h2>
     <div id="cart-items-container" class="row">
         <!-- Cart items will be dynamically inserted here -->
     </div>
-
-    <div class="row mt-4">
-        <div class="col-md-8">
-            <div class="cart-totals">
-                <h4>Cart Totals</h4>
-                <p id="subtotal">Subtotal: $0.00</p>
-                <p id="shipping-cost">Shipping:</p>
-                <p id="total-cost">Total: $0.00</p>
-            </div>
-        </div>
+    <!-- Move cart-totals-container outside of cart-items-container -->
+    <div id="cart-totals-container" class="row mt-4 cart-totals">
+        <!-- Cart totals will be dynamically inserted here -->
     </div>
-
     <div class="row mt-4">
         <div class="col text-center">
             <button id="update-cart" class="btn btn-large btn-custom-blue">Update Cart</button>
-            <button id="checkout" class="btn btn-large btn-custom-blue">Proceed to Checkout</button>
+            <button id="checkout" class="btn btn-large btn-custom-blue">Checkout</button>
         </div>
     </div>
 </div>
+
+   <!-- Footer -->
+   <footer class="footer">
+    <p id="user-welcome-message"></p> <!-- This will be filled by JavaScript -->
+    <p>&copy; 2023 Spam Mart LLC. All rights reserved.</p>
+    </footer>   
 
 <!-- Bootstrap and JavaScript -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>

@@ -240,7 +240,108 @@ margin-top: auto;
     background-color: #0056b3;
 }
 
-.cart-totals {
-    text-align: left;
-    margin-bottom: 20px;
+.cart-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1em;
+  }
+  
+  .cart-item img {
+    max-width: 100px;
+    height: auto;
+    margin-right: 1em;
+  }
+  
+  .cart-item-details {
+    flex-grow: 1;
+  }
+  
+  .remove-item-btn {
+    padding: .5em 1em;
+    background-color: #f00;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .empty-cart-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px; /* You can adjust the height as needed */
+    font-size: 1.5em; /* Adjust the font size as desired */
+    text-align: center;
+}
+
+
+.fa-user {
+    color: white;
+    /* Set the size to match other icons */
+    font-size: 1rem; /* Adjust as needed */
+    vertical-align: middle;
+}
+
+.logged-in-message {
+    background-color: #ffcccb; /* Light red background */
+    color: #333; /* Dark text for readability */
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 1.1em;
+}
+
+/* Ensures that the dropdown is positioned relative to its parent */
+.nav-item.dropdown {
+    position: relative;
+}
+
+/* Styles the dropdown menu */
+.dropdown-menu {
+    position: absolute;
+    top: 100%; /* Positions the dropdown right below the navbar item */
+    right: 0; /* Aligns the dropdown to the right */
+    left: auto; /* Resets any left positioning if it exists */
+    z-index: 1000; /* Ensures it's above other content */
+}
+
+/* Optional: Styles the dropdown items */
+.dropdown-item {
+    color: #001b6d; /* Sets the text color */
+    padding: 0.5em 1em; /* Sets the padding for each item */
+    text-align: left; /* Aligns text to the left */
+    background-color: rgb(255, 255, 255); /* Sets the background color */
+    border: none; /* Removes any borders */
+}
+
+/* Changes the background color of dropdown items on hover */
+.dropdown-item:focus {
+    background-color: #f60000; /* Light grey background on hover/focus */
+    color: #000000; /* Optionally change text color on hover/focus */
+}
+
+
+
+.empty-cart-message {
+    font-size: 1.5rem; /* Adjust size as needed */
+    color: #333; /* Set the color */
+    margin: 0; /* Remove default margin */
+    padding: 20px; /* Padding for aesthetics */
+    width: 100%; /* Take full width to center text properly */
+}
+
+.cart-item {
+    margin-bottom: 20px; /* Add space between items */
+}
+
+.cart-item img {
+    max-width: 100%; /* Ensure images are responsive */
+    height: auto;
+    margin-bottom: 10px; /* Add some space between the image and the item details */
+}
+
+/* If you are using a container that uses display: flex, you may need to adjust it */
+#cart-items-container {
+    display: block; /* Default block display stacks elements vertically */
 }

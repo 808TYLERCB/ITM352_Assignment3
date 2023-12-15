@@ -1,16 +1,63 @@
 [
   {
-    "name": "person",
-    "email": "itm352@hawaii.edu",
-    "password": "0470fdfe7a3117757ed11de040af1d0a3c3ea39a9047913f38c295bb60728498da431499eb4be3177075fc8e5b33df0e821a2f5e74fc09c5d3fd98396e87eabf",
-    "salt": "60258db2fa2f8dc174c240dac69b9b76",
-    "status": false
-  },
-  {
     "name": "Tyler",
     "email": "Tyler@tyler.com",
     "password": "616e765d6b950ef0d8d97b0cd58b9481c967d14761b17d7452ae7801d158dee5dca6dad00b5951238265cc662ab3bd3a7d66b47bbcc32ffb0fca07e7db4c12a0",
     "salt": "f9ac69d34aadf94fba4ca30b9e26f9af",
-    "status": false
+    "token": "8d4bf22bf5de39fc9c2cd5061066c49b",
+    "cart": [
+      {
+        "id": 13,
+        "name": "Bottle Opener & Keychain",
+        "price": 2,
+        "description": "A handy keychain with bottle opener. SPAM® Brand imprint.",
+        "image": "https://store.spam.com/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/6/3/6391_1_1.jpg",
+        "qty_available": 500,
+        "qty_sold": 0,
+        "quantity": 2
+      },
+      {
+        "id": 14,
+        "name": "Yeti Spam Can Cooler",
+        "price": 30,
+        "description": "White YETI brand can cooler with SPAM® Brand logo.",
+        "image": "https://store.spam.com/media/catalog/product/cache/1/small_image/300x/17f82f742ffe127f42dca9de82fb58b1/6/3/6357_1_1.jpg",
+        "qty_available": 30,
+        "qty_sold": 0,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "name": "Tyler",
+    "email": "Ty@ty.com",
+    "password": "d126bd4c559ed2ccdc0dae4be07f648e951d292c964388683b454859b89149249562a26cfb2c00db4038dd4991c65081404fc2d36a6721b4f9af10cd9eaa3336",
+    "salt": "0716dff92b7c92e3c578d6e2ae0750a5",
+    "token": "8d331867613f07a4575dcdb97a27cc30",
+    "cart": []
+  },
+  {
+    "name": "Mimi",
+    "email": "mimi@mimi.com",
+    "password": "876ae5f797f55b7b3bf7aaa25e92d6d2465b40e1460aecdf71977b00ed97723c582c91932d35d7fab4c6c98f4d37c6491bd3a901c88c44266f4d273bffe362f3",
+    "salt": "08a834554787d14cec3e1ef6fe5d6cf9",
+    "token": "baaa6307c49403e910060ff7518c59d8",
+    "cart": []
+  },
+  {
+    "name": "Grader",
+    "email": "itm352@hawaii.edu",
+    "password": "ea74942d993e4b69c2ebf96f54d5140d55e359fa8cb324794a9e67a7873a40e1a3f457d83d06ec1619091c6aeb3c1e214b4dd4a7a93adc0d29f737a139680b80",
+    "salt": "e524ad7632a394df7e4bbeb13018a45b",
+    "token": "b2ffbe1f5ba249b29daf3cbe978f18d2",
+    "cart": []
+  },
+  {
+    "name": "Tyler",
+    "email": "tylerbrede@gmail.com",
+    "password": "adf1178758dd7290f07b3121787c7b971d1149f4754a0baa375fd9c4c1a8c9cb928fb16e7e3ca7ad60df5dde113e5a08331fdf600b0fd4ceeb3cdbdb3e505e1a",
+    "salt": "b76348ad127d00a04dd799f645c06f21",
+    "token": "003b22bdccc77a102d8daf838731fcfd",
+    "cart": []
   }
 ]

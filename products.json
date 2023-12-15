@@ -5,15 +5,17 @@
     "price": 3.99,
     "description": "A healthier option with less sodium than the classic spam.",
     "image": "https://www.spam.com/wp-content/uploads/2019/09/image-product_spam-less-sodium-12oz-420x420.png",
-    "qty_available": 200
+    "qty_available": 200,
+    "qty_sold": 0
   },
   {
     "id": 2,
     "name": "Spam Classic",
-    "price": 3.50,
+    "price": 3.5,
     "description": "The classic spam flavor that everyone loves.",
     "image": "https://www.spam.com/wp-content/uploads/2019/09/image-product_spam-classic-12oz-420x420.png",
-    "qty_available": 100
+    "qty_available": 100,
+    "qty_sold": 0
   },
   {
     "id": 3,
@@ -21,15 +23,17 @@
     "price": 4.25,
     "description": "A rich, smoky flavor for a unique taste experience.",
     "image": "https://www.spam.com/wp-content/uploads/2019/09/image-product_spam-hickory-smoke-12oz-420x420.png",
-    "qty_available": 150
+    "qty_available": 150,
+    "qty_sold": 0
   },
   {
     "id": 4,
     "name": "Spam Hot and Spicy",
-    "price": 4.50,
+    "price": 4.5,
     "description": "Spicy and flavorful, perfect for those who love a little heat.",
     "image": "https://www.spam.com/wp-content/uploads/2019/08/image-product_spam-hot-and-spicy-12oz-420x420.png",
-    "qty_available": 250
+    "qty_available": 250,
+    "qty_sold": 0
   },
   {
     "id": 5,
@@ -37,7 +41,8 @@
     "price": 3.75,
     "description": "A lighter version with fewer calories and less fat.",
     "image": "https://www.spam.com/wp-content/uploads/2019/09/image-product_spam-lite-12oz-420x420.png",
-    "qty_available": 300
+    "qty_available": 300,
+    "qty_sold": 0
   },
   {
     "id": 6,
@@ -45,103 +50,115 @@
     "price": 4.75,
     "description": "A delicious teriyaki twist on the classic spam.",
     "image": "https://www.spam.com/wp-content/uploads/2019/09/image-product_spam-teriyaki-12oz-420x420.png",
-    "qty_available": 100
+    "qty_available": 100,
+    "qty_sold": 0
   },
   {
     "id": 7,
     "name": "Spam T-Shirt",
-    "price": 20.00,
+    "price": 20,
     "description": "Navy t-shirt with yellow SPAM CLASSIC across front.",
     "image": "https://store.spam.com/media/catalog/product/cache/1/small_image/300x/17f82f742ffe127f42dca9de82fb58b1/6/1/6157_1.jpg",
-    "qty_available": 100
+    "qty_available": 100,
+    "qty_sold": 0
   },
   {
     "id": 8,
     "name": "Spam Sweatshirt",
-    "price": 30.00,
+    "price": 30,
     "description": "Navy crewneck sweatshirt with twill applique lettering of SPAM® Brand.",
     "image": "https://store.spam.com/media/catalog/product/cache/1/small_image/300x/17f82f742ffe127f42dca9de82fb58b1/6/2/6210_2.jpg",
-    "qty_available": 35
+    "qty_available": 30,
+    "qty_sold": 0
   },
   {
     "id": 9,
     "name": "Spam Tie Dye T-Shirt",
-    "price": 25.00,
+    "price": 25,
     "description": "A fun way to show your love of the SPAM® Brand. Multi colors dyed together with SPAM® Brand imprint on front.",
     "image": "https://store.spam.com/media/catalog/product/cache/1/small_image/300x/17f82f742ffe127f42dca9de82fb58b1/6/5/6561_3.jpg",
-    "qty_available": 40
+    "qty_available": 40,
+    "qty_sold": 0
   },
   {
     "id": 10,
     "name": "Spam Hoodie",
-    "price": 40.00,
+    "price": 40,
     "description": "Charcoal grey heavy weight hooded sweatshirt with full color SPAM® Can crackle printed on front.",
     "image": "https://store.spam.com/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/6/8/6896_1_1.jpg",
-    "qty_available": 60
+    "qty_available": 60,
+    "qty_sold": 0
   },
   {
     "id": 11,
     "name": "SPAM® Brand Bamboo Hat",
-    "price": 40.00,
+    "price": 40,
     "description": "Wide brim bamboo weaved hat with SPAM® Can patch on front. Adjustable chin strap and flex band insert for perfect fit. One size fits most.",
     "image": "https://store.spam.com/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/6/1/6196_1_2.jpg",
-    "qty_available": 30
+    "qty_available": 30,
+    "qty_sold": 0
   },
   {
     "id": 12,
     "name": "SPAM® Brand Flip Flops",
-    "price": 15.00,
+    "price": 15,
     "description": "Blue and yellow with multiple SPAM® Brand imprint on top. SPAM® Brand stamped out on bottom of each sandal which leaves imprint behind in the sand.",
     "image": "https://store.spam.com/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/6/4/6438_1.jpg",
-    "qty_available": 100
+    "qty_available": 100,
+    "qty_sold": 0
   },
   {
     "id": 13,
     "name": "Bottle Opener & Keychain",
-    "price": 2.00,
+    "price": 2,
     "description": "A handy keychain with bottle opener. SPAM® Brand imprint.",
     "image": "https://store.spam.com/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/6/3/6391_1_1.jpg",
-    "qty_available": 500
+    "qty_available": 500,
+    "qty_sold": 0
   },
   {
     "id": 14,
     "name": "Yeti Spam Can Cooler",
-    "price": 30.00,
+    "price": 30,
     "description": "White YETI brand can cooler with SPAM® Brand logo.",
     "image": "https://store.spam.com/media/catalog/product/cache/1/small_image/300x/17f82f742ffe127f42dca9de82fb58b1/6/3/6357_1_1.jpg",
-    "qty_available": 30
+    "qty_available": 30,
+    "qty_sold": 0
   },
   {
     "id": 15,
     "name": "SPAM® Brand Recipe Book",
-    "price": 15.00,
+    "price": 15,
     "description": "New cookbook! 152 colorful pages with 100+ recipes from traditional to gourmet.",
     "image": "https://store.spam.com/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/6/2/6234_1_1.jpg",
-    "qty_available": 25
+    "qty_available": 25,
+    "qty_sold": 0
   },
   {
     "id": 16,
     "name": "SPAM® Brand Slicer",
-    "price": 10.00,
+    "price": 10,
     "description": "Slice an entire can of SPAM® product into 9 slices with this easy to use wire slicer.",
     "image": "https://store.spam.com/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/6/1/6129b.jpg",
-    "qty_available": 100
+    "qty_available": 100,
+    "qty_sold": 0
   },
   {
     "id": 17,
     "name": "SPAM® Brand Backpack",
-    "price": 32.00,
+    "price": 32,
     "description": "SPAM® Brand backpack with full color SPAM® Can patch sewn on front pocket.",
     "image": "https://store.spam.com/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/6/5/6542_1.jpg",
-    "qty_available": 50
+    "qty_available": 50,
+    "qty_sold": 0
   },
   {
     "id": 18,
     "name": "Plush Musubi Kitty",
-    "price": 25.00,
+    "price": 25,
     "description": "Soft plush musubi roll with a kitty.",
     "image": "https://store.spam.com/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/6/3/6310_1.jpg",
-    "qty_available": 75
+    "qty_available": 75,
+    "qty_sold": 0
   }
-
 ]

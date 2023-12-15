@@ -62,9 +62,20 @@ body {
                 <li class="nav-item">
                     <a class="nav-link" href="cart.html">
                         <i class="fa fa-shopping-cart"></i> Cart
+                        <span id="cart-item-count">0</span> <!-- This is where the item count will be displayed -->
                     </a>
                 </li>
-                <!-- Add more nav items here if needed -->
+                <li class="nav-item">
+                    <span class="nav-link-divider">|</span>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user"></i> <span id="user-name">Profile</span>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <button class="dropdown-item" id="logout-button">Logout</button>
+                        </div>
+                    </li>
+               <!-- Add more nav items here if needed -->
             </ul>
         </div>
     </nav>

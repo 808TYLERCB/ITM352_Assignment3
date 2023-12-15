@@ -1,99 +1,82 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Parse the purchaseData from the URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const purchaseDataEncoded = urlParams.get('purchaseData');
-
-    // Check if purchaseData is present
-    if (purchaseDataEncoded) {
-        // Decode and parse the purchase data
-        const invoiceData = JSON.parse(decodeURIComponent(purchaseDataEncoded));
-
-        // Debug: Log the invoice data
-        console.log('Invoice Data:', invoiceData);
-
-        // Populate the invoice on the page
-        populateInvoice(invoiceData);
-    } else {
-        // If purchaseData is not present, log an error and possibly display a message to the user
-        console.error('No invoice data available.');
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    fetch('/get-cart')
+        .then(response => response.json())
+        .then(cartItems => {
+            populateInvoiceTable(cartItems);
+            updateInvoiceTotals(cartItems);
+        })
+        .catch(error => console.error('Error:', error));
 });
 
-
-// Function that populates the invoice from the decoded URL
-function populateInvoice(invoiceItems) {
+function populateInvoiceTable(cartItems) {
     const invoiceBody = document.getElementById('invoice-body');
+    invoiceBody.innerHTML = ''; // Clear existing table data
+
+    cartItems.forEach(item => {
+        const row = document.createElement('tr');
+
+        // Create an image element with a tooltip
+        const imgElement = `<img src="${item.image}" alt="${item.name}" title="${item.description}" style="width: 50px; height: auto;">`;
+
+        row.innerHTML = `
+            <td>${imgElement} ${item.name}</td>
+            <td>${item.quantity}</td>
+            <td>$${item.price.toFixed(2)}</td>
+            <td>$${(item.quantity * item.price).toFixed(2)}</td>
+        `;
+
+        invoiceBody.appendChild(row);
+    });
+}
+
+function updateInvoiceTotals(cartItems) {
     let subtotal = 0;
     let totalQuantity = 0;
 
-    // Clear existing invoice items
-    invoiceBody.innerHTML = '';
-
-    // Iterate over each item in the invoice data
-    invoiceItems.forEach(item => {
-        // Create a new row and cells with the item data
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>
-                <img src="${item.icon}" alt="${item.name}" class="product-icon" data-toggle="tooltip" data-placement="top" title="${item.description}">
-                ${item.name}
-            </td>
-            <td>${item.quantity}</td>
-            <td>$${item.price.toFixed(2)}</td>
-            <td>$${item.extendedPrice.toFixed(2)}</td>
-        `;
-        // Append the row to the invoice body
-        invoiceBody.appendChild(row);
-
-        // Update subtotal and total quantity
-        subtotal += item.extendedPrice;
+    cartItems.forEach(item => {
+        subtotal += item.quantity * item.price;
         totalQuantity += item.quantity;
     });
+
+    const taxRate = 0.04; // 4% tax rate
+    const salesTax = subtotal * taxRate;
+    let shipping = totalQuantity < 10 ? 2 : totalQuantity < 25 ? 5 : 10;
+    const total = subtotal + salesTax + shipping;
+
+    document.getElementById('subtotal-amount').textContent = `$${subtotal.toFixed(2)}`;
+    document.getElementById('tax-amount').textContent = `$${salesTax.toFixed(2)}`;
+    document.getElementById('shipping-amount').textContent = `$${shipping.toFixed(2)}`;
+    document.getElementById('total-amount').textContent = `$${total.toFixed(2)}`;
+}
+
+
 
     // Initialize Bootstrap tooltips
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();
     });
 
-    // Calculate sales tax and shipping
-    const salesTax = subtotal * 0.04;
-    let shipping = totalQuantity < 10 ? 2 : totalQuantity < 25 ? 5 : 10;
-
-    // Calculate and display the total amount
-    const totalAmount = subtotal + salesTax + shipping;
-    document.getElementById('subtotal-amount').textContent = `$${subtotal.toFixed(2)}`;
-    document.getElementById('tax-amount').textContent = `$${salesTax.toFixed(2)}`;
-    document.getElementById('shipping-amount').textContent = `$${shipping.toFixed(2)}`;
-    document.getElementById('total-amount').textContent = `$${totalAmount.toFixed(2)}`;
-}
 
 document.addEventListener('DOMContentLoaded', function() {
     // Your existing code to populate the invoice...
 });
 
-// Add event listener for the "Confirm Purchase" button
 document.getElementById('confirm-purchase').addEventListener('click', function() {
-    // Retrieve the token and purchaseData from the URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-    const purchaseDataEncoded = urlParams.get('purchaseData');
-
-    // Send a POST request to the server to confirm the purchase
     fetch('/confirm-purchase', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            token: token,
-            purchaseData: purchaseDataEncoded // Send the encoded purchase data
-        })
+        }
+        // No need to send body data if server uses session-based cart
     })
     .then(response => response.json())
     .then(data => {
-        // Show the thank-you message
-        document.getElementById('thank-you-message').textContent = data.message;
-        document.getElementById('thank-you-message').style.display = 'block';
+// Display the thank-you message in the HTML div instead of an alert
+const userName = document.getElementById('user-name').textContent; // Adjust if needed to get the user's name
+const thankYouMessage = `Thank you ${userName}! for shopping with us, a copy of your invoice will be emailed to you.`;
+const messageDiv = document.getElementById('thank-you-message');
+messageDiv.textContent = thankYouMessage; // Set the text content of the div to your message
+messageDiv.style.display = 'block'; // Make the div visible
 
         // Redirect to the home page after 5 seconds
         setTimeout(function() {
@@ -102,6 +85,7 @@ document.getElementById('confirm-purchase').addEventListener('click', function()
     })
     .catch(error => {
         console.error('Error:', error);
+        // Handle any errors here
     });
 });
 
@@ -110,16 +94,103 @@ document.getElementById('continue-shopping').addEventListener('click', function(
     window.location.href = '/products_display.html' + window.location.search;
 });
 
+function updateCartIcon() {
+    fetch('/get-cart')
+    .then(response => response.json())
+    .then(cart => {
+        const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+        const cartIcon = document.getElementById('cart-item-count');
+        cartIcon.textContent = `(${totalItems})`;
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+document.addEventListener('DOMContentLoaded', updateCartIcon);
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Retrieve the username and user count from the URL query parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const userName = urlParams.get('userName');
-    const userCount = urlParams.get('userCount');
+    // Check login status and set username
+    fetch('/check-login-status')
+    .then(response => response.json())
+    .then(data => {
+        if (data.isLoggedIn) {
+            // User is logged in, display the username in the navbar
+            const userName = data.userName;
+            document.getElementById('user-name').textContent = userName;
+            // Make the dropdown clickable by adding 'dropdown-toggle' class
+            const profileLink = document.getElementById('navbarDropdown');
+            profileLink.classList.add('dropdown-toggle');
+            profileLink.setAttribute('data-toggle', 'dropdown');
 
-    // Update the user welcome message
-    const welcomeMessageElement = document.getElementById('user-welcome-message');
-    if (welcomeMessageElement) {
-        welcomeMessageElement.textContent = `Welcome ${userName}! there are ${userCount} other user(s) currently shopping.`;
+            // Also display the username and email in the footer
+            document.getElementById('user-name-footer').textContent = userName;
+            document.getElementById('user-email-footer').textContent = data.userEmail; // Use the email from the response
+        } else {
+            // User is not logged in, hide the dropdown toggle functionality
+            const dropdownElement = document.getElementById('navbarDropdown');
+            if (dropdownElement) {
+                dropdownElement.remove();
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+
+    // Event listener for the logout button
+    const logoutBtn = document.getElementById('logout-button');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            logoutUser();
+        });
     }
 });
+
+function logoutUser() {
+    // AJAX request to the server's logout route
+    fetch('/logout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Log out actions here (e.g., redirect to login page)
+            window.location.href = '/login.html';
+        } else {
+            // Handle logout failure
+            alert('Logout failed: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+
+
+function logoutUser() {
+    // AJAX request to the server's logout route
+    fetch('/logout', {
+        method: 'POST',
+        // Add any necessary headers, credentials, or body data here
+        headers: {
+            'Content-Type': 'application/json'
+            // Include credentials if necessary: 'credentials': 'include'
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Log out actions here (e.g., redirect to login page)
+            window.location.href = '/login.html';
+        } else {
+            // Handle logout failure
+            alert('Logout failed: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}

@@ -4,10 +4,13 @@ const crypto = require('crypto');
 const app = express();
 const path = require('path');
 const session = require('express-session');
+const nodemailer = require('nodemailer');
 
 // Middleware for parsing application/x-www-form-urlencoded and JSON
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+
 
 // Middleware to validate token
 const validateToken = (req, res, next) => {
@@ -23,35 +26,58 @@ const validateToken = (req, res, next) => {
     }
 };
 
-// Global array to track logged-in users
-let loggedInUsers = [];
 
+// Create a transporter object using Gmail SMTP transport
+let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'spammartmail@gmail.com',
+      pass: 'sloj mqwh pnbe aohn'
+    }
+  });
 
 app.use(session({
-    secret: 'secret_key', // Replace with a real secret key
+    secret: 'secret_key', // Replace with your actual secret key
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false } // Set to true if using HTTPS
-  }));
+    cookie: { 
+        secure: false, // Set to true if you are using HTTPS
+        maxAge: 15 * 60 * 1000 // Set the session to expire after 15 minutes of inactivity
+    },
+    rolling: true // Reset the session expiration time on every request
+}));
 
   app.post('/add-to-cart', (req, res) => {
-    const productToAdd = req.body;
-
     if (!req.session.cart) {
         req.session.cart = [];
     }
 
-    // Check if the product is already in the cart
-    const existingProduct = req.session.cart.find(item => item.id === productToAdd.id);
-    if (existingProduct) {
-        existingProduct.quantity += productToAdd.quantity;
-    } else {
-        req.session.cart.push(productToAdd);
+    const { productId, quantity } = req.body;
+    const productToAdd = products.find(product => product.id === productId);
+
+    if (!productToAdd || quantity <= 0) {
+        return res.status(400).json({ error: 'Invalid product data or quantity' });
     }
 
-    res.json({ message: 'Product added to cart', cart: req.session.cart });
-});
+    // Check if the product is already in the cart
+    const existingProductIndex = req.session.cart.findIndex(item => item.id === productId);
 
+    if (existingProductIndex > -1) {
+        // Update quantity if product is already in cart
+        req.session.cart[existingProductIndex].quantity += quantity;
+    } else {
+        // Add new item to cart
+        const newCartItem = { 
+            ...productToAdd,
+            quantity: quantity 
+        };
+        req.session.cart.push(newCartItem);
+    }
+
+    const totalItems = req.session.cart.reduce((total, item) => total + item.quantity, 0);
+
+    res.json({ message: 'Product added to cart', cart: req.session.cart, totalItems: totalItems });
+});
 app.post('/remove-from-cart', (req, res) => {
     // Convert productId from string to number
     const productId = parseInt(req.body.productId, 10);
@@ -63,17 +89,71 @@ app.post('/remove-from-cart', (req, res) => {
 });
 
 
-  app.get('/cart', (req, res) => {
-    res.json(req.session.cart || []);
-  });
+app.get('/get-cart', (req, res) => {
+    // Ensure the cart exists and is an array before trying to map over it
+    if (!Array.isArray(req.session.cart)) {
+        req.session.cart = [];
+    }
+    const cartWithDetails = req.session.cart.map(cartItem => {
+        const product = products.find(p => p.id === cartItem.id);
+        return {
+            ...cartItem,
+            name: product ? product.name : 'Unknown Product',
+            price: product ? product.price : 0,
+            image: product ? product.image : 'no_image_available.png',
+            description: product ? product.description : 'No description available'
+        };
+    });
 
+    res.json(cartWithDetails);
+});
+
+app.post('/update-cart', (req, res) => {
+    if (!req.session.cart) {
+        return res.status(400).json({ error: 'No cart found' });
+    }
+
+    const updates = req.body.updates; // Expecting an array of { id, quantity }
+
+    updates.forEach(update => {
+        const itemIndex = req.session.cart.findIndex(item => item.id === update.id);
+        if (itemIndex > -1) {
+            if (update.quantity > 0) {
+                req.session.cart[itemIndex].quantity = update.quantity;
+            } else {
+                // Remove item if quantity is 0 or less
+                req.session.cart.splice(itemIndex, 1);
+            }
+        }
+    });
+
+    res.json({ success: true, cart: req.session.cart });
+});
+
+app.get('/checkout', (req, res) => {
+    // Check if the cart exists and is not empty
+    if (req.session.cart && req.session.cart.length > 0) {
+        // Check if the user is logged in
+        if (req.session.user) {
+            // User is logged in, proceed with the checkout process
+            // Redirect to the invoice page
+            res.redirect('/invoice.html');
+        } else {
+            // User is not logged in, redirect to the login page with a message
+            req.session.checkoutInProgress = true; // Mark that checkout was in progress
+            res.redirect('/login.html?message=' + encodeURIComponent('Please log in to complete your purchase.'));
+        }
+    } else {
+        // Cart is empty, redirect to the cart page with a message
+        res.redirect('/cart.html?message=' + encodeURIComponent('Your cart is empty.'));
+    }
 
 // Protect the invoice route
 app.get('/invoice.html', validateToken, (req, res) => {
     // Serve the invoice page
     res.sendFile(path.join(__dirname, '/public', 'invoice.html'));
 });
-
+});
 
 
 // Log all requests
@@ -125,46 +205,85 @@ const isEmailInUse = (email) => {
     return users.some(user => user.email.toLowerCase() === email.toLowerCase());
 };
 
-//Route for user login
-app.post('/login', (req, res) => {
-    const { email, password, purchaseData } = req.body;
+// Helper function to validate user credentials
+function validateUser(email, password) {
+    const users = getUserData();
+    const user = users.find(user => user.email.toLowerCase() === email.toLowerCase());
+    if (!user) {
+        return false;
+    }
+    
+    // Create hash from the attempted password with the salt from the stored user
+    const hash = crypto.pbkdf2Sync(password, user.salt, 1000, 64, `sha512`).toString(`hex`);
+    return user.password === hash;
+}
 
-    // Validate user credentials
+// Helper function to generate a secure token
+function generateToken() {
+    return crypto.randomBytes(16).toString('hex');
+}
+
+app.post('/login', (req, res) => {
+    const { email, password } = req.body;
+
     if (validateUser(email, password)) {
         const users = getUserData();
         const user = users.find(user => user.email.toLowerCase() === email.toLowerCase());
-        
-        // Generate and assign a new token
-        user.token = generateToken();
-        saveUserData(users);
 
-        if (!loggedInUsers.includes(email.toLowerCase())) {
-            loggedInUsers.push(email.toLowerCase());
-        }
+        if (user) {
+            // Generate and assign a new token, if you're using token-based authentication
+            user.token = generateToken(); // This should be saved in a more persistent way if needed
+            saveUserData(users); // Save any changes to user data
 
-        // Prepare personalization info
-        const personalizationInfo = {
-            userName: user.name,
-            userCount: loggedInUsers.length - 1 // Exclude the current user from the count
-        };
+            // Set up user session
+            req.session.user = {
+                isLoggedIn: true,
+                name: user.name,
+                email: user.email,
+                token: user.token // You may also set the token here if you're using it for session management
+            };
 
-        // Redirect based on presence of purchase data
-        if (purchaseData) {
-            // Redirect to invoice page with token, purchase data, and personalization info
-            res.redirect(`/invoice.html?token=${user.token}&purchaseData=${encodeURIComponent(purchaseData)}&userName=${encodeURIComponent(personalizationInfo.userName)}&userCount=${personalizationInfo.userCount}`);
+            // Restore the user's cart from the saved data
+            req.session.cart = user.cart || [];
+
+            // Redirect to the invoice page if there are items in the cart, otherwise redirect to a welcome or home page
+            if (req.session.cart && req.session.cart.length > 0) {
+                res.redirect('/invoice.html'); // Replace with the actual path to your invoice page
+            } else {
+                res.redirect('/index.html'); // Replace with the actual path to your home page
+            }
         } else {
-            // Redirect to the index page with token, userName, and userCount
-            res.redirect(`/index.html?token=${user.token}&userName=${encodeURIComponent(personalizationInfo.userName)}&userCount=${personalizationInfo.userCount}`);
+            // If user credentials are invalid, redirect back to login page with an error message
+            res.redirect(`/login.html?error=${encodeURIComponent('Invalid Email or Password. Please try again.')}&email=${encodeURIComponent(email)}`);
         }
     } else {
-        // Redirect back to login page with error message and sticky email field
-        res.redirect(`/login.html?error=${encodeURIComponent('*Invalid Email or Password. Please try again.')}&email=${encodeURIComponent(email)}`);
+        // If user credentials are invalid, redirect back to login page with an error message
+        res.redirect(`/login.html?error=${encodeURIComponent('Invalid Email or Password. Please try again.')}&email=${encodeURIComponent(email)}`);
     }
 });
 
-// Route for user registration
+
+
+app.get('/check-login-status', (req, res) => {
+    // Check if the user session exists and has a user object with isLoggedIn true
+    if (req.session && req.session.user && req.session.user.isLoggedIn) {
+        // Send back the logged-in status, the user's name, and email
+        res.json({
+            isLoggedIn: true,
+            userName: req.session.user.name,
+            userEmail: req.session.user.email // Include the user's email
+        });
+    } else {
+        // If no user is logged in, send back a logged-out status
+        res.json({
+            isLoggedIn: false
+        });
+    }
+});
+
+
 app.post('/register', async (req, res) => {
-    const { email, password, name, confirmPassword, purchaseData } = req.body;
+    const { email, password, name, confirmPassword } = req.body;
     let errors = [];
 
     // Check for empty fields
@@ -218,7 +337,11 @@ app.post('/register', async (req, res) => {
     }
 
     if (errors.length > 0) {
-        res.redirect(`/register.html?errors=${encodeURIComponent(JSON.stringify(errors))}&email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&purchaseData=${encodeURIComponent(purchaseData)}`);
+        // Preserve the user input (excluding passwords) in session for sticky form behavior
+        req.session.registrationData = { email, name };
+        // Store errors in session
+        req.session.registrationErrors = errors;
+        res.redirect('/register.html');
         return;
     }
 
@@ -236,29 +359,34 @@ app.post('/register', async (req, res) => {
         users.push(newUser);
         saveUserData(users);
 
-        if (!loggedInUsers.includes(email.toLowerCase())) {
-            loggedInUsers.push(email.toLowerCase());
-        }
-
-         // Redirect to the invoice page with token, purchase data, and personalization info
-         const personalizationInfo = {
-            userName: name,
-            userCount: loggedInUsers.length - 1 // Exclude the current user from the count
+        // Store user data in session
+        req.session.user = {
+            name: newUser.name,
+            email: newUser.email,
+            isLoggedIn: true,
+            token: newUser.token
         };
 
+        // Check for cart data in session
+        if (req.session.cart && req.session.cart.length > 0) {
+            // Redirect to registration_success.html
+            res.redirect('/registration_success.html');
+        } else {
+            // Redirect to registration_success2.html
+            res.redirect('/registration_success2.html');
+        }
+    }
+});
 
-        // Redirect based on the presence of purchase data
-        if (purchaseData) {
-            // Redirect to success page with token, purchase data, and personalization info
-            res.redirect(`/registration_success.html?token=${newUser.token}&purchaseData=${encodeURIComponent(purchaseData)}&userName=${encodeURIComponent(personalizationInfo.userName)}&userCount=${personalizationInfo.userCount}`);
-        } else {
-            // Redirect to the index page with token, userName, and userCount
-            res.redirect(`/registration_success2.html?token=${newUser.token}&userName=${encodeURIComponent(personalizationInfo.userName)}&userCount=${personalizationInfo.userCount}`);
-        }
-        } else {
-        // Redirect back with errors and sticky data (excluding passwords)
-        res.redirect(`/register.html?errors=${encodeURIComponent(JSON.stringify(errors))}&email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&purchaseData=${encodeURIComponent(purchaseData)}`);
-        }
+app.get('/get-registration-errors-and-data', (req, res) => {
+    res.json({
+        errors: req.session.registrationErrors || [],
+        stickyData: req.session.registrationData || {}
+    });
+
+    // Clear the errors and sticky data from the session after sending them
+    delete req.session.registrationErrors;
+    delete req.session.registrationData;
 });
 
 // Route for checking email uniqueness
@@ -271,131 +399,120 @@ app.get('/check-email', (req, res) => {
     }
 });
 
-
-app.post('/process-purchase', (req, res) => {
-    let validationErrors = quantityValidation(req.body, products);
-    
-    // Extract token, userName, and userCount from the request body
-    const { token, userName, userCount } = req.body;
-
-    if (validationErrors.length > 0) {
-        // Redirect with error messages, retaining token, userName, and userCount
-        res.redirect(`/products_display.html?errors=${encodeURIComponent(JSON.stringify(validationErrors))}` + 
-                     (token ? `&token=${token}` : '') + 
-                     (userName ? `&userName=${encodeURIComponent(userName)}` : '') + 
-                     (userCount !== undefined ? `&userCount=${userCount}` : ''));
-    } else {
-        // Create an array to hold the invoice items
-        const invoiceItems = products.map(product => {
-            const quantityKey = `quantity_${product.name.replace(/\s+/g, '_')}`;
-            const quantity = parseInt(req.body[quantityKey], 10);
-            if (quantity > 0) {
-                // Prepare the item for the invoice
-                return {
-                    name: product.name,
-                    quantity: quantity,
-                    price: product.price,
-                    extendedPrice: quantity * product.price,
-                    icon: product.image,
-                    description: product.description
-                };
-            }
-            return null;
-        }).filter(item => item != null);
-
-        // Encode the invoice items array as a JSON string
-        const invoiceDataEncoded = encodeURIComponent(JSON.stringify(invoiceItems));
-
-        // Find the email associated with the token
+app.post('/logout', (req, res) => {
+    if (req.session && req.session.user) {
         const users = getUserData();
-        const user = users.find(u => u.token === token);
+        const userIndex = users.findIndex(user => user.email === req.session.user.email);
 
-        // Check if the user's email is in the loggedInUsers array
-        if (user && loggedInUsers.includes(user.email.toLowerCase())) {
-            // Redirect to the invoice page with the purchase data, including token, userName, and userCount
-            res.redirect(`/invoice.html?token=${token}&purchaseData=${invoiceDataEncoded}&userName=${encodeURIComponent(userName)}&userCount=${userCount}`);
-        } else {
-            // If the user is not logged in or token is not valid, redirect to the login page with the purchase data
-            res.redirect(`/login.html?purchaseData=${invoiceDataEncoded}`);
+        if (userIndex !== -1) {
+            users[userIndex].cart = req.session.cart || []; // Save the cart to the user's record
+            saveUserData(users);
         }
+
+        // Clear user's session
+        req.session.user = null;
+        req.session.cart = [];
     }
+
+    res.json({ success: true, message: 'Successfully logged out.' });
 });
 
+app.post('/confirm-purchase', async (req, res) => {
+    if (!req.session || !req.session.user || !req.session.cart) {
+        return res.status(403).send('Access Denied');
+    }
 
-function quantityValidation(reqBody, products) {
-    let errors = [];
-    let totalQuantitySelected = 0;
+    const cartItems = req.session.cart;
+    const invoiceHtml = generateInvoiceHtml(cartItems);
 
-    // Check each product for selected quantity and validate
-    products.forEach(product => {
-        const quantityKey = `quantity_${product.name.replace(/\s+/g, '_')}`;
-        let quantityStr = reqBody[quantityKey];
-
-        // Check if the quantity is defined and not empty
-        if (quantityStr !== undefined && quantityStr.trim() !== '') {
-            let quantity = parseInt(quantityStr, 10);
-
-            // Check if the parsed number is an integer and not NaN
-            if (!isNaN(quantity) && quantity.toString() === quantityStr.trim()) {
-                totalQuantitySelected += quantity;
-
-                if (quantity < 0) {
-                    errors.push(`Negative quantity for ${product.name} is not allowed.`);
-                } else if (quantity > product.qty_available) {
-                    errors.push(`Insufficient quantity available for ${product.name}. Only ${product.qty_available} left.`);
-                }
-            } else {
-                // If the quantity is not an integer or is NaN
-                errors.push(`Invalid quantity for ${product.name}. Please enter a positive whole number.`);
-            }
+    cartItems.forEach(item => {
+        const productIndex = products.findIndex(p => p.id === item.id);
+        if (productIndex !== -1) {
+            products[productIndex].qty_available -= item.quantity;
+            products[productIndex].qty_sold += item.quantity;
         }
     });
 
-    // Check for total quantity selected
-    if (totalQuantitySelected === 0 && errors.length === 0) {
-        // If no valid quantities have been entered and no other errors have been collected
-        errors.push('No quantities were selected. Please select at least one product.');
-    }
+    // Prepare the email options
+    const mailOptions = {
+      from: 'spammartmail@gmail.com', // This should be the email associated with your Gmail account used for sending
+      to: req.session.user.email, // The user's email from the session
+      subject: '[Spam Mart] Order Confirmation',
+      html: invoiceHtml // The generated HTML for the invoice
+    };
 
-    return errors;
-}
-
-app.post('/confirm-purchase', (req, res) => {
-    const { token, purchaseData } = req.body; // Expecting token and purchaseData in the request body
-
-    // the token and find the user
-    const users = getUserData();
-    const user = users.find(user => user.token === token);
-
-    if (user) {
-        // Parse the purchaseData sent from the client
-        const invoiceItems = JSON.parse(purchaseData);
-
-        // Update the product inventory
-        invoiceItems.forEach(item => {
-            // Find the product in the inventory
-            const productIndex = products.findIndex(p => p.name === item.name);
-            if (productIndex !== -1) {
-                // Update available quantity and quantity sold
-                products[productIndex].qty_available -= item.quantity;
-                products[productIndex].qty_sold += item.quantity;
-            }
-        });
-
-        // Remove the user's token to log them out
-        user.token = null;
-        saveUserData(users);
-
-        // Remove user from logged-in users array
-        loggedInUsers = loggedInUsers.filter(email => email !== user.email);
-
-        // Respond to the client with a success message
-        res.json({ message: "Thank you for your purchase! You will be logged out and redirected to the home page." });
-    } else {
-        res.status(403).send('Access Denied');
+    // Send an email to the user with the invoice
+    try {
+        await transporter.sendMail(mailOptions);
+        // Clear the cart session after sending the email
+        req.session.cart = [];
+        res.json({ message: "Thank you for your purchase! An invoice has been emailed to you." });
+    } catch (error) {
+        console.error("Error sending email:", error);
+        res.status(500).send('There was an error processing your request.');
     }
 });
+// Server-side function to generate invoice HTML for email
+function generateInvoiceHtml(cartItems) {
+    let subtotal = 0;
+    let totalQuantity = cartItems.reduce((total, item) => total + item.quantity, 0);
 
+    // Generate table rows for each cart item
+    const rowsHtml = cartItems.map(item => {
+        const totalItemPrice = item.quantity * item.price;
+        subtotal += totalItemPrice;
+
+        return `
+            <tr>
+                <td>${item.name}</td>
+                <td>${item.quantity}</td>
+                <td>$${item.price.toFixed(2)}</td>
+                <td>$${totalItemPrice.toFixed(2)}</td>
+            </tr>
+        `;
+    }).join('');
+
+    const taxRate = 0.04; // 4% tax rate
+    const salesTax = subtotal * taxRate;
+    let shipping = totalQuantity < 10 ? 2 : totalQuantity < 25 ? 5 : 10;
+    const total = subtotal + salesTax + shipping;
+
+    // Return the full HTML for the email
+    return `
+        <h1>Invoice from Spam Mart</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Extended Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${rowsHtml}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3">Subtotal</td>
+                    <td>$${subtotal.toFixed(2)}</td>
+                </tr>
+                <tr>
+                    <td colspan="3">Sales Tax (4%)</td>
+                    <td>$${salesTax.toFixed(2)}</td>
+                </tr>
+                <tr>
+                    <td colspan="3">Shipping</td>
+                    <td>$${shipping.toFixed(2)}</td>
+                </tr>
+                <tr>
+                    <td colspan="3"><strong>Total Amount</strong></td>
+                    <td><strong>$${total.toFixed(2)}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    `;
+}
 
 // Serve static files from 'public' directory
 app.use(express.static(__dirname + '/public'));
