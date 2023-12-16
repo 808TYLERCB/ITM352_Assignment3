@@ -4,29 +4,8 @@
     "email": "Tyler@tyler.com",
     "password": "616e765d6b950ef0d8d97b0cd58b9481c967d14761b17d7452ae7801d158dee5dca6dad00b5951238265cc662ab3bd3a7d66b47bbcc32ffb0fca07e7db4c12a0",
     "salt": "f9ac69d34aadf94fba4ca30b9e26f9af",
-    "token": "8d4bf22bf5de39fc9c2cd5061066c49b",
-    "cart": [
-      {
-        "id": 13,
-        "name": "Bottle Opener & Keychain",
-        "price": 2,
-        "description": "A handy keychain with bottle opener. SPAM® Brand imprint.",
-        "image": "https://store.spam.com/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/6/3/6391_1_1.jpg",
-        "qty_available": 500,
-        "qty_sold": 0,
-        "quantity": 2
-      },
-      {
-        "id": 14,
-        "name": "Yeti Spam Can Cooler",
-        "price": 30,
-        "description": "White YETI brand can cooler with SPAM® Brand logo.",
-        "image": "https://store.spam.com/media/catalog/product/cache/1/small_image/300x/17f82f742ffe127f42dca9de82fb58b1/6/3/6357_1_1.jpg",
-        "qty_available": 30,
-        "qty_sold": 0,
-        "quantity": 2
-      }
-    ]
+    "token": "12d8c56bf1930caa06cde30a64934e16",
+    "cart": []
   },
   {
     "name": "Tyler",
@@ -49,7 +28,7 @@
     "email": "itm352@hawaii.edu",
     "password": "ea74942d993e4b69c2ebf96f54d5140d55e359fa8cb324794a9e67a7873a40e1a3f457d83d06ec1619091c6aeb3c1e214b4dd4a7a93adc0d29f737a139680b80",
     "salt": "e524ad7632a394df7e4bbeb13018a45b",
-    "token": "b2ffbe1f5ba249b29daf3cbe978f18d2",
+    "token": "0848750c1f579bc6e33d02b5211ff521",
     "cart": []
   },
   {
@@ -57,7 +36,7 @@
     "email": "tylerbrede@gmail.com",
     "password": "adf1178758dd7290f07b3121787c7b971d1149f4754a0baa375fd9c4c1a8c9cb928fb16e7e3ca7ad60df5dde113e5a08331fdf600b0fd4ceeb3cdbdb3e505e1a",
     "salt": "b76348ad127d00a04dd799f645c06f21",
-    "token": "003b22bdccc77a102d8daf838731fcfd",
+    "token": "74ba58feb6883940640557b00a7aa286",
     "cart": []
   }
 ]
